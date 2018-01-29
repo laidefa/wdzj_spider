@@ -1,28 +1,28 @@
-####Çå¿ÕÊı¾İ#######
+####æ¸…ç©ºæ•°æ®#######
 rm(list=ls())
 gc()
 options(scipen = 200)
-#######µ¼ÈëÏàÓ¦°ü#########
+#######å¯¼å…¥ç›¸åº”åŒ…#########
 library(XML)
 library(RCurl)
 library(RJSONIO)
 
-############×¥È¡url##############
+############æŠ“å–url##############
 
 url='http://shuju.wdzj.com/plat-data-custom.html'
 
 
-#########¶¨Òå×¥È¡ÈÕÆÚ###########
+#########å®šä¹‰æŠ“å–æ—¥æœŸ###########
 shujuDate <- "2018-01-232018-01-23"
 
-###·¢ËÍpostÇëÇó#
+###å‘é€postè¯·æ±‚#
 web<-postForm(url,type='0',shujuDate=shujuDate,.opts=curlOptions(url=url,ssl.verifyhost=FALSE,ssl.verifypeer=FALSE))
 
 
-#####½âÎöjson#
+#####è§£æjson#
 p <-fromJSON(web)
 
-#############¶¨Òå×¥È¡Ö¸±ê
+#############å®šä¹‰æŠ“å–æŒ‡æ ‡
 
 amount <- ""
 platName <- ""
@@ -44,14 +44,18 @@ top10StayStillProportion <- ""
 developZhishu <- ""
 
 
-##########Ñ­»·½âÎö×Ö¶Î##################
+##########å¾ªç¯è§£æå­—æ®µ##################
 
 for(i in 1:length(p)){
   platName1 <-  p[[i]]$platName
   platName <-c(platName,platName1)
   
   newbackground1 <-  p[[i]]$newbackground
-  newbackground <-c(newbackground,newbackground1)
+   if(length(newbackground1)>0){
+   newbackground <-c(newbackground,newbackground1)
+  }else{
+   newbackground <-c(newbackground,"æœªçŸ¥")
+  }
   
   amount1 <- p[[i]]$amount
   amount <-c(amount,amount1)
@@ -100,30 +104,33 @@ for(i in 1:length(p)){
   top10StayStillProportion <- c(top10StayStillProportion,top10StayStillProportion1)
   
   developZhishu1 <- p[[i]]$developZhishu
-  developZhishu <- c(developZhishu,developZhishu1)
-  
+   if(length(developZhishu1>0)){
+    developZhishu <- c(developZhishu,developZhishu1)
+  }else{
+    developZhishu <- c(developZhishu,"0")
+  }
  
 }
 
 
 
-###############ºÏ²¢Êı¾İ##############
+###############åˆå¹¶æ•°æ®##############
 data <- data.frame(platName[-1],amount[-1],incomeRate[-1],loanPeriod[-1],netInflowOfThirty[-1],stayStillOfTotal[-1],
                    fullloanTime[-1],regCapital[-1],timeOperation[-1],totalLoanNum[-1],bidderNum[-1],avgBidMoney[-1],
-                   top10DueInProportion[-1],borrowerNum[-1],avgBorrowMoney[-1],top10StayStillProportion[-1]
+                   top10DueInProportion[-1],borrowerNum[-1],avgBorrowMoney[-1],top10StayStillProportion[-1],newbackground[-1],developZhishu[-1]
                    
                    )
 
 
 
-###############ÖØÃüÃûÁĞÃû³Æ########
-names(data) <- c("Æ½Ì¨Ãû³Æ","³É½»Á¿(ÍòÔª)","Æ½¾ùÔ¤ÆÚÊÕÒæÂÊ(%)","Æ½¾ù½è¿îÆÚÏŞ(ÔÂ)","×Ê½ğ¾»Á÷Èë(ÍòÔª)","´ı»¹Óà¶î(ÍòÔª)",
+###############é‡å‘½ååˆ—åç§°########
+names(data) <- c("å¹³å°åç§°","æˆäº¤é‡(ä¸‡å…ƒ)","å¹³å‡é¢„æœŸæ”¶ç›Šç‡(%)","å¹³å‡å€Ÿæ¬¾æœŸé™(æœˆ)","èµ„é‡‘å‡€æµå…¥(ä¸‡å…ƒ)","å¾…è¿˜ä½™é¢(ä¸‡å…ƒ)",
                  
-                 "Âú±êÓÃÊ±(·Ö)","×¢²á×Ê±¾(ÍòÔª)","ÔËÓªÊ±¼ä(ÔÂ)","½è¿î±êÊı(¸ö)","Í¶×ÊÈËÊı(ÈË)","ÈË¾ùÍ¶×Ê½ğ¶î(ÍòÔª)",
-                 "Ç°Ê®´óÍÁºÀ´ıÊÕ½ğ¶îÕ¼±È(%)","½è¿îÈËÊı(ÈË)","ÈË¾ù½è¿î½ğ¶î(ÍòÔª)","Ç°Ê®´ó½è¿îÈË´ı»¹½ğ¶îÕ¼±È(%)"
+                 "æ»¡æ ‡ç”¨æ—¶(åˆ†)","æ³¨å†Œèµ„æœ¬(ä¸‡å…ƒ)","è¿è¥æ—¶é—´(æœˆ)","å€Ÿæ¬¾æ ‡æ•°(ä¸ª)","æŠ•èµ„äººæ•°(äºº)","äººå‡æŠ•èµ„é‡‘é¢(ä¸‡å…ƒ)",
+                 "å‰åå¤§åœŸè±ªå¾…æ”¶é‡‘é¢å æ¯”(%)","å€Ÿæ¬¾äººæ•°(äºº)","äººå‡å€Ÿæ¬¾é‡‘é¢(ä¸‡å…ƒ)","å‰åå¤§å€Ÿæ¬¾äººå¾…è¿˜é‡‘é¢å æ¯”(%)","å¹³å°èƒŒæ™¯","å‘å±•æŒ‡æ•°æ’å"
                  
                  )
 
 
-####Ğ´³öcsv#########
-write.csv(data,"C:/pic/data/Íø´ûÖ®¼ÒÅÀ³æ.csv",row.names = T)
+####å†™å‡ºcsv#########
+write.csv(data,"C:/pic/data/ç½‘è´·ä¹‹å®¶çˆ¬è™«.csv",row.names = T)
